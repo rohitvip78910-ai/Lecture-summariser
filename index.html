@@ -6,46 +6,7 @@
     <title>YT Chat Hacker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Base Styles & Glassmorphism */
-        body {
-            background: linear-gradient(135deg, #0f172a, #000000, #1e1b4b);
-            background-attachment: fixed;
-        }
-        .glass {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .user-msg {
-            background: linear-gradient(135deg, rgba(79, 70, 229, 0.8), rgba(124, 58, 237, 0.8));
-            border-bottom-right-radius: 4px;
-        }
-        .ai-msg {
-            background: rgba(51, 65, 85, 0.6);
-            border-bottom-left-radius: 4px;
-        }
-        
-        /* Custom Scrollbar for Chat */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-
-        /* Spinner Animation */
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .spinner { animation: spin 1s linear infinite; }
-    </style>
-</head>
-<body class="text-white h-screen flex flex-col overflow-hidden font-sans">
-
-    <header class="glass-panel p-4 flex justify-between items-center z-10">
+        <body class="text-white h-[100dvh] flex flex-col overflow-hidden font-sans"> <header class="glass-panel p-4 flex justify-between items-center z-10 shrink-0">
         <div class="flex items-center gap-2">
             <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
             <h1 class="text-lg font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">YT HACKER</h1>
@@ -55,7 +16,7 @@
         </button>
     </header>
 
-    <div class="glass-panel p-3 z-10 flex gap-2">
+    <div class="glass-panel p-3 z-10 flex gap-2 shrink-0">
         <input type="url" id="ytUrl" placeholder="Paste YouTube URL here..." class="flex-1 bg-black/30 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition">
         <button id="loadBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center justify-center min-w-[80px]">
             <span id="loadText">Load</span>
@@ -63,9 +24,9 @@
         </button>
     </div>
 
-    <main id="chatBox" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 pb-20 relative"></main>
+    <main id="chatBox" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4"></main>
 
-    <div class="glass-panel p-3 pb-safe absolute bottom-0 left-0 right-0 z-10">
+    <div class="glass-panel p-3 shrink-0 z-10 pb-safe">
         <form id="chatForm" class="flex gap-2 relative">
             <input type="text" id="chatInput" placeholder="Ask about the video..." disabled class="flex-1 bg-black/40 border border-white/10 rounded-2xl pl-4 pr-12 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition disabled:opacity-50">
             <button type="submit" id="sendBtn" disabled class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-indigo-500 rounded-full text-white hover:bg-indigo-400 transition disabled:opacity-50 disabled:bg-gray-600 flex items-center justify-center">
@@ -76,26 +37,18 @@
     </div>
 
     <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-        <div class="glass w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-white/10 transform transition-all">
-            <h2 class="text-xl font-bold mb-4 text-white">API Settings</h2>
-            
-            <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">OpenRouter API Key</label>
-                <input type="password" id="apiKeyInput" placeholder="sk-or-v1-..." class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-            </div>
+        ```
 
-            <div class="mb-6">
-                <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Model Name</label>
-                <input type="text" id="modelInput" placeholder="e.g., google/gemini-2.5-flash" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                <p class="text-[10px] text-gray-500 mt-1">Must be typed exactly (e.g., deepseek/deepseek-r1:free)</p>
-            </div>
+### 💡 কী কী পরিবর্তন করা হয়েছে?
 
-            <div class="flex gap-3">
-                <button id="closeSettingsBtn" class="flex-1 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 text-sm font-medium transition">Cancel</button>
-                <button id="saveSettingsBtn" class="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-medium transition shadow-lg shadow-indigo-900/50">Save</button>
-            </div>
-        </div>
-    </div>
+* **`h-screen` থেকে `h-[100dvh]`:** মোবাইলে ব্রাউজারের অ্যাড্রেস বার ওঠা-নামা করলেও এখন পুরো স্ক্রিন পারফেক্ট সাইজে থাকবে।
+* **`absolute` রিমুভ করা হয়েছে:** ইনপুট বার আগে স্ক্রিনের নিচে ভাসমান ছিল (absolute)। এখন এটিকে ফ্লেক্সবক্সের (`flex flex-col`) অংশ করে দেওয়া হয়েছে এবং `shrink-0` ব্যবহার করা হয়েছে। এতে করে এটি আর কখনো মেসেজের ওপর উঠবে না।
+* **`pb-20` রিমুভ করা হয়েছে:** চ্যাটবক্সের নিচে যে অতিরিক্ত জায়গা রাখা ছিল, এখন আর সেটির দরকার নেই। 
+
+এই কোডটি রিপ্লেস করে পেজটি রিলোড দিন। এখন দেখবেন ইনপুট বারটি পারফেক্টলি নিচে বসে আছে এবং মেসেজগুলো সুন্দরভাবে দেখা যাচ্ছে!
+
+আর কোনো সমস্যা হলে জানাবেন!
+        
 
     <script>
         // --- State ---
