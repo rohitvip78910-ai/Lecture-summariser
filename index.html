@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YT Chat Hacker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Base Styles & Glassmorphism */
+        body {
+            background: linear-gradient(135deg, #0f172a, #000000, #1e1b4b);
+            background-attachment: fixed;
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .user-msg {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.8), rgba(124, 58, 237, 0.8));
+            border-bottom-right-radius: 4px;
+        }
+        .ai-msg {
+            background: rgba(51, 65, 85, 0.6);
+            border-bottom-left-radius: 4px;
+        }
+        
+        /* Custom Scrollbar for Chat */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        /* Spinner Animation */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spinner { animation: spin 1s linear infinite; }
+    </style>
+</head>
+<body class="text-white h-screen flex flex-col overflow-hidden font-sans">
+
+    <header class="glass-panel p-4 flex justify-between items-center z-10">
+        <div class="flex items-center gap-2">
+            <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            <h1 class="text-lg font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">YT HACKER</h1>
+        </div>
+        <button id="settingsBtn" class="p-2 rounded-full hover:bg-white/10 transition">
+            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </button>
+    </header>
+
+    <div class="glass-panel p-3 z-10 flex gap-2">
+        <input type="url" id="ytUrl" placeholder="Paste YouTube URL here..." class="flex-1 bg-black/30 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition">
+        <button id="loadBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center justify-center min-w-[80px]">
+            <span id="loadText">Load</span>
+            <svg id="loadSpinner" class="spinner w-5 h-5 hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        </button>
+    </div>
+
+    <main id="chatBox" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 pb-20 relative"></main>
+
+    <div class="glass-panel p-3 pb-safe absolute bottom-0 left-0 right-0 z-10">
+        <form id="chatForm" class="flex gap-2 relative">
+            <input type="text" id="chatInput" placeholder="Ask about the video..." disabled class="flex-1 bg-black/40 border border-white/10 rounded-2xl pl-4 pr-12 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition disabled:opacity-50">
+            <button type="submit" id="sendBtn" disabled class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-indigo-500 rounded-full text-white hover:bg-indigo-400 transition disabled:opacity-50 disabled:bg-gray-600 flex items-center justify-center">
+                <svg id="sendIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                <svg id="sendSpinner" class="spinner w-4 h-4 hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            </button>
+        </form>
+    </div>
+
+    <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="glass w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-white/10 transform transition-all">
+            <h2 class="text-xl font-bold mb-4 text-white">API Settings</h2>
+            
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">OpenRouter API Key</label>
+                <input type="password" id="apiKeyInput" placeholder="sk-or-v1-..." class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Model Name</label>
+                <input type="text" id="modelInput" placeholder="e.g., google/gemini-2.5-flash" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                <p class="text-[10px] text-gray-500 mt-1">Must be typed exactly (e.g., deepseek/deepseek-r1:free)</p>
+            </div>
+
+            <div class="flex gap-3">
+                <button id="closeSettingsBtn" class="flex-1 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 text-sm font-medium transition">Cancel</button>
+                <button id="saveSettingsBtn" class="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-medium transition shadow-lg shadow-indigo-900/50">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State ---
+        let videoContext = "";
+        let chatHistory = [];
+
+        // --- DOM Elements ---
+        const ytUrlInput = document.getElementById('ytUrl');
+        const loadBtn = document.getElementById('loadBtn');
+        const loadText = document.getElementById('loadText');
+        const loadSpinner = document.getElementById('loadSpinner');
+        
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
+        const chatForm = document.getElementById('chatForm');
+        const sendBtn = document.getElementById('sendBtn');
+        const sendIcon = document.getElementById('sendIcon');
+        const sendSpinner = document.getElementById('sendSpinner');
+        
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const modelInput = document.getElementById('modelInput');
+
+        // --- Initialization ---
+        function init() {
+            apiKeyInput.value = localStorage.getItem('or_api_key') || '';
+            modelInput.value = localStorage.getItem('or_model') || '';
+            addMessage("System", "Welcome! Tap the ⚙️ gear icon to set your OpenRouter API Key and Model. Then paste a YouTube URL and click Load.", "ai");
+        }
+
+        // --- Settings Modal Logic ---
+        settingsBtn.onclick = () => settingsModal.classList.remove('hidden');
+        closeSettingsBtn.onclick = () => settingsModal.classList.add('hidden');
+        
+        saveSettingsBtn.onclick = () => {
+            const key = apiKeyInput.value.trim();
+            const model = modelInput.value.trim();
+            if(!key || !model) {
+                alert("Please fill in both fields.");
+                return;
+            }
+            localStorage.setItem('or_api_key', key);
+            localStorage.setItem('or_model', model);
+            settingsModal.classList.add('hidden');
+            addMessage("System", "Settings saved securely to local storage.", "ai");
+        };
+
+        // --- Transcript Fetching (The Hack) ---
+        loadBtn.onclick = async () => {
+            const url = ytUrlInput.value.trim();
+            if(!url) return alert("Please enter a YouTube URL");
+
+            // UI Loading state
+            loadText.classList.add('hidden');
+            loadSpinner.classList.remove('hidden');
+            loadBtn.disabled = true;
+
+            try {
+                // Jina Reader API call for transcript/content scraping
+                const response = await fetch(`https://r.jina.ai/${url}`);
+                if (!response.ok) throw new Error("Failed to fetch from Jina API");
+                
+                const text = await response.text();
+                videoContext = text;
+                
+                // Unlock Chat UI
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                
+                addMessage("System", "✅ Video loaded successfully! I've read the transcript. What would you like to know?", "ai");
+            } catch (err) {
+                addMessage("System", `❌ Error loading video: ${err.message}`, "ai");
+            } finally {
+                // Restore UI state
+                loadText.classList.remove('hidden');
+                loadSpinner.classList.add('hidden');
+                loadBtn.disabled = false;
+            }
+        };
+
+        // --- Chat Interface Logic ---
+        function addMessage(sender, text, type) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `max-w-[85%] rounded-2xl p-3 text-sm shadow-md ${type === 'user' ? 'self-end user-msg text-white' : 'self-start ai-msg text-gray-100 glass'}`;
+            wrapper.innerHTML = `<strong class="block text-xs mb-1 opacity-70">${sender}</strong><span class="whitespace-pre-wrap leading-relaxed">${text}</span>`;
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        chatForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const msg = chatInput.value.trim();
+            if(!msg) return;
+
+            const apiKey = localStorage.getItem('or_api_key');
+            const modelName = localStorage.getItem('or_model');
+
+            if(!apiKey || !modelName) {
+                addMessage("System", "⚠️ Please set your API Key and Model Name in settings (⚙️) first.", "ai");
+                return;
+            }
+
+            if(!videoContext) {
+                addMessage("System", "⚠️ Please load a YouTube video first.", "ai");
+                return;
+            }
+
+            // User message UI
+            addMessage("You", msg, "user");
+            chatInput.value = "";
+            chatHistory.push({ role: "user", content: msg });
+
+            // UI Loading state
+            sendIcon.classList.add('hidden');
+            sendSpinner.classList.remove('hidden');
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+
+            try {
+                // Compile Messages for LLM
+                const messagesPayload = [
+                    { role: "system", content: "You are a helpful assistant. Answer questions based on the following video context:\n\n" + videoContext },
+                    ...chatHistory
+                ];
+
+                // OpenRouter API Call
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "HTTP-Referer": window.location.href, // Required by OpenRouter
+                        "X-Title": "YouTube Chat Hacker",      // Required by OpenRouter
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: modelName,
+                        messages: messagesPayload
+                    })
+                });
+
+                const data = await response.json();
+                
+                if(data.error) throw new Error(data.error.message || "API Error");
+
+                const aiReply = data.choices[0].message.content;
+                chatHistory.push({ role: "assistant", content: aiReply });
+                addMessage("AI", aiReply, "ai");
+
+            } catch (err) {
+                addMessage("System", `❌ LLM Error: ${err.message}`, "ai");
+                // Remove failed user message from history so it doesn't corrupt context
+                chatHistory.pop(); 
+            } finally {
+                // Restore UI state
+                sendIcon.classList.remove('hidden');
+                sendSpinner.classList.add('hidden');
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
+            }
+        };
+
+        // Boot
+        init();
+    </script>
+</body>
+</html>
+
